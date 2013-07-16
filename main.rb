@@ -10,4 +10,14 @@ class TimerApp < Sinatra::Base
     end
     slim :index
   end
+
+  get %r{/([\d]+)} do
+    sec = params[:captures].first.to_i
+    timer = EventMachine::PeriodicTimer.new(1) do
+      timer.cancel if sec <= 0      
+      io.push :tick, sec
+      sec = sec - 1
+    end
+    slim :index
+  end
 end
